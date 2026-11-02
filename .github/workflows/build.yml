@@ -32,21 +32,31 @@ jobs:
 
       - name: Restore signing keystore
         run: |
-          if [ -f debug.keystore.base64 ]; then
-            echo "Decoding debug.keystore from debug.keystore.base64..."
+          echo "Restoring debug.keystore..."
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "Using KEYSTORE_BASE64 from GitHub Secrets..."
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > debug.keystore
+          elif [ -f debug.keystore.base64 ]; then
+            echo "Using debug.keystore.base64 file..."
             base64 -d debug.keystore.base64 > debug.keystore
-            echo "Keystore successfully restored."
-          elif [ -f debug.keystore ]; then
-            echo "debug.keystore already present."
           else
-            echo "WARNING: Neither debug.keystore.base64 nor debug.keystore found."
+            echo "Using embedded project keystore..."
+            echo "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" | base64 -d > debug.keystore
           fi
+
+          if [ ! -s debug.keystore ]; then
+            echo "Fallback: Generating fresh debug.keystore with keytool..."
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          echo "Listing keystore file:"
+          ls -la debug.keystore
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --continue || echo "Tests finished"
+        run: ./gradlew testDebugUnitTest --continue || echo "Unit tests step finished"
 
       - name: Build Signed APK with Gradle
         run: ./gradlew assembleDebug --stacktrace
