@@ -64,7 +64,11 @@ object AssetIngestion {
             for (j in 0 until optionsJson.length()) {
                 options.add(optionsJson.getString(j))
             }
-            val correctIndex = obj.getInt("correctIndex")
+            val correctIndex = if (obj.has("correct_index")) {
+                obj.getInt("correct_index")
+            } else {
+                obj.optInt("correctIndex", 0)
+            }
             val explanation = obj.optString("explanation", "")
 
             // تجهيز السؤال بقيم SM-2 الأولية للمراجعة الفورية

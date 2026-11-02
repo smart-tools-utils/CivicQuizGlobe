@@ -24,11 +24,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
@@ -230,7 +230,7 @@ fun MainAppScreen(
                         onClick = { currentTab = 1 },
                         label = { Text(strings.tabLibrary) },
                         icon = {
-                            Icon(Icons.Default.LibraryBooks, contentDescription = strings.tabLibrary)
+                            Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = strings.tabLibrary)
                         },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,

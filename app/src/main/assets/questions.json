@@ -1,167 +1,302 @@
 [
   {
-    "question": "Vilka är Sveriges fyra grundlagar? (What are Sweden's four fundamental laws?)",
+    "id": 1,
+    "question": "Vad heter Sveriges sydligaste punkt?",
     "options": [
-      "Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen",
-      "Strafflagen, Civilrätten, Miljölagen och Skattelagen",
-      "Allemansrätten, Kommunallagen, Vallagen och Skollagen",
-      "Grundlagen, Statslagen, EU-lagen och Kungabalken"
+      "Treriksröset",
+      "Smygehuk",
+      "Kebnekaise",
+      "Gotland"
     ],
-    "correctIndex": 0,
-    "explanation": "Sveriges författning består av fyra grundlagar: Regeringsformen (som fastslår demokratin), Successionsordningen (reglerna för tronföljden), Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen."
+    "correct_index": 1,
+    "explanation": "Sverige sträcker sig cirka 1 600 kilometer från den nordligaste punkten Treriksröset till den sydligaste punkten Smygehuk."
   },
   {
-    "question": "Hur ofta hålls allmänna val till riksdagen, regioner och kommuner i Sverige?",
+    "id": 2,
+    "question": "Vilken ström bidrar till att Sverige har ett mildare klimat än andra områden på samma breddgrad?",
     "options": [
-      "Vart fjärde år den andra söndagen i september",
-      "Vart femte år i maj",
-      "Vart tredje år i juni",
-      "Varje år på Sveriges nationaldag"
+      "Golfströmmen",
+      "Nordpolens ström",
+      "Baltiska strömmen",
+      "Kanarieströmmen"
     ],
-    "correctIndex": 0,
-    "explanation": "Allmänna val till riksdag, regionfullmäktige och kommunfullmäktige hålls i Sverige samtidigt vart fjärde år, den andra söndagen i september."
+    "correct_index": 0,
+    "explanation": "Golfströmmen och den Nordatlantiska strömmen transporterar varmt vatten från Mexikanska golfen, vilket värmer upp luften över Sverige."
   },
   {
-    "question": "Vad innebär allemansrätten i Sverige? (What does 'Allemansrätten' mean?)",
+    "id": 3,
+    "question": "Hur stor del av Sveriges befolkning bor i städer?",
     "options": [
-      "Rätten att rösta i alla allmänna val oavsett medborgarskap",
-      "Rätten att vistas fritt i naturen under devisen 'inte störa, inte förstöra'",
-      "Rätten att bygga hus på allmän kommunal mark",
-      "Rätten till gratis kollektivtrafik för alla bosatta"
+      "Cirka 50 procent",
+      "Cirka 70 procent",
+      "Cirka 85 procent",
+      "Cirka 95 procent"
     ],
-    "correctIndex": 1,
-    "explanation": "Allemansrätten är en unik svensk rättighet inskriven i grundlagen som ger alla människor rätt att röra sig fritt i skog och mark, under förutsättning att man visar hänsyn mot natur och markägare."
+    "correct_index": 2,
+    "explanation": "Befolkningen är inte jämnt fördelad, och ungefär 85 procent av Sveriges befolkning bor i städer."
   },
   {
-    "question": "Hur många ledamöter sitter i Sveriges riksdag? (How many members in the Riksdag?)",
+    "id": 4,
+    "question": "Sverige har ett klimatmål att utsläppen av växthusgaser ska vara så nära noll som möjligt. Vilket år ska detta mål nås?",
     "options": [
-      "250 ledamöter",
+      "År 2030",
+      "År 2045",
+      "År 2050",
+      "År 2060"
+    ],
+    "correct_index": 1,
+    "explanation": "I Sverige finns en klimatlag med klimatpolitiska mål där ett mål är att utsläppen ska vara så nära noll som möjligt år 2045."
+  },
+  {
+    "id": 5,
+    "question": "Vad innebär det att valen i en demokrati är hemliga?",
+    "options": [
+      "Att ingen behöver avslöja hur de röstar",
+      "Att det bara finns ett parti att rösta på",
+      "Att valresultatet inte visas för allmänheten",
+      "Att man måste ha tillstånd för att rösta"
+    ],
+    "correct_index": 0,
+    "explanation": "Valen ska vara hemliga så att ingen behöver avslöja hur de röstar, vilket gör att alla kan uttrycka sina åsikter utan hot eller tvång."
+  },
+  {
+    "id": 6,
+    "question": "Vad kallas det när människor lever åtskilda beroende på inkomst eller etnisk bakgrund?",
+    "options": [
+      "Integration",
+      "Segregation",
+      "Globalisering",
+      "Sekularisering"
+    ],
+    "correct_index": 1,
+    "explanation": "Segregation innebär bland annat att människor lever åtskilda beroende på hur mycket pengar de tjänar eller vilken etnisk bakgrund de har."
+  },
+  {
+    "id": 7,
+    "question": "Hur många ledamöter har den svenska riksdagen?",
+    "options": [
+      "290 ledamöter",
       "349 ledamöter",
       "400 ledamöter",
-      "149 ledamöter"
+      "150 ledamöter"
     ],
-    "correctIndex": 1,
-    "explanation": "Sveriges riksdag består av 349 folkvalda ledamöter (ett udda antal för att undvika oavgjorda omröstningar)."
+    "correct_index": 1,
+    "explanation": "Riksdagen har 349 ledamöter som väljs vart fjärde år."
   },
   {
-    "question": "Vem är Sveriges statschef enligt Regeringsformen? (Who is Head of State?)",
+    "id": 8,
+    "question": "Vem väljer Sveriges statsminister?",
     "options": [
-      "Statsministern",
-      "Kungen (monarken)",
-      "Riksdagens talman",
-      "Högsta domstolens ordförande"
+      "Kungen",
+      "Folket direkt i ett presidentval",
+      "Riksdagen",
+      "De statliga myndigheterna"
     ],
-    "correctIndex": 1,
-    "explanation": "Sverige är en parlamentarisk monarki där kungen är statschef. Statschefen har dock enbart representativa och ceremoniella uppgifter och saknar politisk makt."
+    "correct_index": 2,
+    "explanation": "Riksdagen väljer statsminister som får i uppdrag att bilda regering."
   },
   {
-    "question": "Vad är riksdagens främsta uppgift i det svenska statsskicket?",
+    "id": 9,
+    "question": "Vad innebär det att Sverige är en konstitutionell monarki?",
     "options": [
-      "Att styra landet och leda departementen dagligen",
-      "Att stifta lagar, besluta om statens budget och kontrollera regeringen",
-      "Att döma i brottmål och förvaltningsmål",
-      "Att utse Sveriges monark och kungafamilj"
+      "Att kungen bestämmer alla lagar",
+      "Att statschefen är en kung eller drottning som saknar politisk makt",
+      "Att regeringen leds av kungafamiljen",
+      "Att domstolarna styrs av monarken"
     ],
-    "correctIndex": 1,
-    "explanation": "Riksdagen är Sveriges högsta beslutande organ. Dess tre huvuduppgifter är att stifta lagar, bestämma om statens inkomster och utgifter (budgeten) samt granska regeringen."
+    "correct_index": 1,
+    "explanation": "Sverige är en konstitutionell monarki. Det betyder att statschefen är en kung eller drottning som inte har någon politisk makt utan fungerar som en symbol."
   },
   {
-    "question": "Vad innebär offentlighetsprincipen i Sverige?",
+    "id": 10,
+    "question": "Vad krävs för att ha rösträtt i det svenska riksdagsvalet?",
     "options": [
-      "Att allmänheten och massmedia har rätt att ta del av myndigheters allmänna handlingar",
-      "Att alla domstolsförhandlingar måste hållas utomhus",
-      "Att alla medborgare måste offentliggöra sina privata anteckningar",
-      "Att alla statliga beslut måste godkännas via folkomröstning"
+      "Att man har fyllt 18 år och är svensk medborgare",
+      "Att man har bott i Sverige i 10 år",
+      "Enbart att man är folkbokförd i en kommun",
+      "Att man äger en fastighet"
     ],
-    "correctIndex": 0,
-    "explanation": "Offentlighetsprincipen är central i svensk demokrati och innebär att alla har rätt att läsa offentliga handlingar hos myndigheter för att garantera insyn och motverka korruption."
+    "correct_index": 0,
+    "explanation": "För att ha rätt att rösta ska man ha fyllt 18 år. För att rösta i riksdagsvalet måste man även vara svensk medborgare."
   },
   {
-    "question": "Vilket år fick kvinnor och män allmän och lika rösträtt i riksdagsval i Sverige?",
+    "id": 11,
+    "question": "Hur stor andel av rösterna måste ett parti minst få för att komma in i riksdagen?",
     "options": [
-      "1809",
-      "1919 (med första allmänna valet 1921)",
-      "1945",
-      "1974"
+      "2 procent",
+      "4 procent",
+      "5 procent",
+      "10 procent"
     ],
-    "correctIndex": 1,
-    "explanation": "Riksdagen beslutade om allmän och lika rösträtt för både kvinnor och män år 1919, och det första valet där kvinnor deltog ägde rum hösten 1921."
+    "correct_index": 1,
+    "explanation": "För att ett parti ska komma in i riksdagen måste det få minst fyra procent av rösterna i valet för att hindra för många småpartier."
   },
   {
-    "question": "Vad har Sveriges 290 kommuner huvudsakligen ansvar för?",
+    "id": 12,
+    "question": "Vilken grundlag bestämmer vem som ska bli kung eller drottning i Sverige?",
     "options": [
-      "Utrikespolitik, armén och valutapolitik",
-      "Skola, förskola, äldreomsorg och socialtjänst",
-      "Enbart sjukhus och regional kollektivtrafik",
-      "Att driva domstolar och fängelser"
+      "Regeringsformen",
+      "Tryckfrihetsförordningen",
+      "Yttrandefrihetsgrundlagen",
+      "Successionsordningen"
     ],
-    "correctIndex": 1,
-    "explanation": "Kommunerna ansvarar för den nära medborgarservicen såsom grundskola, förskola, äldreomsorg, renhållning, räddningstjänst och socialtjänst."
+    "correct_index": 3,
+    "explanation": "Successionsordningen är den grundlag som bestämmer vem som ska bli kung eller drottning efter den nuvarande."
   },
   {
-    "question": "Vad har Sveriges 21 regioner huvudsakligen hand om?",
+    "id": 13,
+    "question": "Från vilken ålder är en person straffmyndig i Sverige enligt nuvarande grundregler?",
     "options": [
-      "Hälso- och sjukvård, tandvård samt regional kollektivtrafik",
-      "Grundskolor och gymnasieskolor",
-      "Polisen och tullverket",
-      "Statens skatteuppbörd och passutfärdande"
+      "13 år",
+      "15 år",
+      "18 år",
+      "21 år"
     ],
-    "correctIndex": 0,
-    "explanation": "Regionernas största och viktigaste ansvarsområde är hälso- och sjukvården samt tandvården, jämte utveckling av regional kollektivtrafik (t.ex. bussar och tåg)."
+    "correct_index": 1,
+    "explanation": "I Sverige är en person straffmyndig och kan bli åtalad för ett brott från 15 års ålder (även om förslag om sänkning för allvarliga brott diskuterats under 2026)."
   },
   {
-    "question": "Vilket datum firas Sveriges nationaldag och vad uppmärksammas då?",
+    "id": 14,
+    "question": "Vad kallas principen som ger allmänheten och journalister rätt att ta del av myndigheters handlingar?",
     "options": [
-      "6 juni – Gustav Vasas val till kung 1523 och 1809 års regeringsform",
-      "30 april – Konungens födelsedag och Valborgsmässoafton",
-      "1 maj – Arbetarrörelsens dag och vårfirande",
-      "13 december – Lucias ljusfest"
+      "Sekretessprincipen",
+      "Offentlighetsprincipen",
+      "Källkritik",
+      "Meddelarfrihet"
     ],
-    "correctIndex": 0,
-    "explanation": "Sveriges nationaldag och svenska flaggans dag firas den 6 juni till minne av att Gustav Vasa valdes till kung den 6 juni 1523 och 1809 års regeringsform."
+    "correct_index": 1,
+    "explanation": "Offentlighetsprincipen betyder att allmänna handlingar från myndigheter är offentliga så att journalister kan granska makten."
   },
   {
+    "id": 15,
+    "question": "Vilka medieföretag ingår i det som kallas public service i Sverige?",
+    "options": [
+      "Aftonbladet och Expressen",
+      "Sveriges Radio (SR), Sveriges Television (SVT) och Utbildningsradion (UR)",
+      "TV4 och Netflix",
+      "Google och Facebook"
+    ],
+    "correct_index": 1,
+    "explanation": "SR, SVT och UR kallas för public service. De ska vara oberoende av politiska intressen och finansieras via skatten utan reklam."
+  },
+  {
+    "id": 16,
+    "question": "Vilket år blev Sverige det första landet i världen att förbjuda våld (aga) mot barn?",
+    "options": [
+      "År 1950",
+      "År 1979",
+      "År 2000",
+      "År 2020"
+    ],
+    "correct_index": 1,
+    "explanation": "Sverige var 1979 det första landet i världen som beslutade att det är förbjudet att slå barn."
+  },
+  {
+    "id": 17,
+    "question": "Vilka folkgrupper erkändes år 2000 som nationella minoriteter i Sverige?",
+    "options": [
+      "Judar, romer, samer, sverigefinnar och tornedalingar",
+      "Norrmän, danskar och finländare",
+      "Alla utländska medborgare",
+      "Nyanlända flyktingar"
+    ],
+    "correct_index": 0,
+    "explanation": "År 2000 erkände Sverige judar, romer, samer, sverigefinnar och tornedalingar som nationella minoriteter."
+  },
+  {
+    "id": 18,
+    "question": "Vem bestämmer lönerna på den svenska arbetsmarknaden enligt den svenska modellen?",
+    "options": [
+      "Staten genom lagstiftning",
+      "Kungen",
+      "Arbetsmarknadens parter (fackförbund och arbetsgivarorganisationer) genom kollektivavtal",
+      "Arbetsförmedlingen"
+    ],
+    "correct_index": 2,
+    "explanation": "I Sverige bestäms löner genom förhandlingar mellan arbetsmarknadens parter i kollektivavtal, inte av staten."
+  },
+  {
+    "id": 19,
+    "question": "Vilken statlig myndighet har till uppgift att se till att skulder blir betalda?",
+    "options": [
+      "Skatteverket",
+      "Kronofogdemyndigheten",
+      "Försäkringskassan",
+      "Arbetsförmedlingen"
+    ],
+    "correct_index": 1,
+    "explanation": "Kronofogdemyndigheten är en statlig myndighet som ser till att skulder blir betalda samt hjälper till med skuldsanering."
+  },
+  {
+    "id": 20,
+    "question": "Vilken nivå av välfärden har det främsta ansvaret för hälso- och sjukvården i Sverige?",
+    "options": [
+      "Staten",
+      "Regionerna",
+      "Kommunerna",
+      "Privata försäkringsbolag"
+    ],
+    "correct_index": 1,
+    "explanation": "Regionernas främsta uppgift är att ansvara för hälso- och sjukvården samt kollektivtrafiken i regionen."
+  },
+  {
+    "id": 21,
+    "question": "Vilket år genomfördes det första riksdagsvalet i Sverige där både män och kvinnor hade rösträtt?",
+    "options": [
+      "År 1865",
+      "År 1909",
+      "År 1921",
+      "År 1945"
+    ],
+    "correct_index": 2,
+    "explanation": "1921 genomfördes det första riksdagsvalet där både män och kvinnor fick rösta, vilket markerar demokratins genombrott."
+  },
+  {
+    "id": 22,
+    "question": "Vad innebar den så kallade 'Du-reformen' på 1960-talet?",
+    "options": [
+      "Att alla fick rätt till en egen telefon",
+      "Att människor började säga 'du' till varandra i stället för att använda titlar eller 'ni'",
+      "Att gymnasieskolan blev obligatorisk",
+      "Att man fick rösta från 16 års ålder"
+    ],
+    "correct_index": 1,
+    "explanation": "Du-reformen på 1960-talet innebar att människor började säga 'du' till varandra, vilket speglade ett mer jämlikt samhälle."
+  },
+  {
+    "id": 23,
     "question": "Vilket år blev Sverige medlem i Europeiska unionen (EU)?",
     "options": [
-      "1973",
-      "1995",
-      "2004",
-      "Sverige är inte medlem i EU"
+      "År 1945",
+      "År 1975",
+      "År 1995",
+      "År 2024"
     ],
-    "correctIndex": 1,
-    "explanation": "Efter en rådgivande folkomröstning 1994 blev Sverige den 1 januari 1995 fullvärdig medlem i Europeiska unionen (EU)."
+    "correct_index": 2,
+    "explanation": "Sverige har varit medlem i EU sedan år 1995."
   },
   {
-    "question": "Vilka är Sveriges fem officiella nationella minoritetsspråk?",
+    "id": 24,
+    "question": "Vilket år blev Sverige officiellt medlem i försvarsalliansen Nato?",
     "options": [
-      "Samiska, finska, meänkieli, romani chib och jiddisch",
-      "Engelska, arabiska, persiska, kurdiska och somaliska",
-      "Danska, norska, isländska, tyska och franska",
-      "Latin, gotiska, fornnordiska, samiska och finska"
+      "År 1991",
+      "År 2020",
+      "År 2022",
+      "År 2024"
     ],
-    "correctIndex": 0,
-    "explanation": "I Sverige har fem historiska grupper ställning som nationella minoriteter: samer (som även är ett urfolk), sverigefinnar, tornedalingar, romer och judar. Deras språk är samiska, finska, meänkieli, romani chib och jiddisch."
+    "correct_index": 3,
+    "explanation": "Sverige och Finland ansökte om medlemskap efter Rysslands angrepp på Ukraina, och Sverige blev officiellt medlem år 2024."
   },
   {
-    "question": "Vad gör Riksdagens ombudsmän (Justitieombudsmannen / JO)?",
+    "id": 25,
+    "question": "När fick Sverige en lagstiftning som gav fullständig religionsfrihet att helt fritt välja eller stå utanför religion?",
     "options": [
-      "Granskar att myndigheter och tjänstemän följer lagar och behandlar medborgare korrekt",
-      "Dömer i brottmål och utdömer fängelsestraff",
-      "Utser regeringen och ministrarna",
-      "Bestämmer vilka böcker som får tryckas i landet"
+      "År 1860",
+      "År 1951",
+      "År 2000",
+      "År 2026"
     ],
-    "correctIndex": 0,
-    "explanation": "JO (Justitieombudsmannen) är en svensk institution instiftad 1809 där enskilda medborgare kan klaga på myndigheter och tjänstemän som bryter mot lagar eller regler."
-  },
-  {
-    "question": "Vad innebär Tryckfrihetsförordningen från 1766 ur ett historiskt perspektiv?",
-    "options": [
-      "Världens första lagstiftning för tryckfrihet och offentlighet i allmänna handlingar",
-      "Lagen som förbjöd alla tidningar i Sverige under 1700-talet",
-      "En lag som krävde att kungen personligen godkände alla böcker",
-      "En internationell traktat mellan Sverige och Frankrike"
-    ],
-    "correctIndex": 0,
-    "explanation": "Den svenska tryckfrihetsförordningen från 1766 var världens allra första lag som skyddade tryckfriheten och fastslog rätten till allmänna handlingar (offentlighetsprincipen)."
+    "correct_index": 1,
+    "explanation": "Det slutliga genombrottet för religionsfriheten kom med religionsfrihetslagen 1951, då det blev möjligt att helt stå utanför ett trossamfund."
   }
 ]
