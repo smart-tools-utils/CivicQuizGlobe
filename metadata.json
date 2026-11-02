@@ -1,0 +1,6 @@
+{
+  "name": "CivicQuiz",
+  "description": "تطبيق ذكي لاختبار الجنسية مع خوارزمية التكرار المتباعد SM-2 وبطاقات تفاعلية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

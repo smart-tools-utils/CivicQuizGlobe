@@ -1,0 +1,167 @@
+[
+  {
+    "question": "Vilka är Sveriges fyra grundlagar? (What are Sweden's four fundamental laws?)",
+    "options": [
+      "Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen",
+      "Strafflagen, Civilrätten, Miljölagen och Skattelagen",
+      "Allemansrätten, Kommunallagen, Vallagen och Skollagen",
+      "Grundlagen, Statslagen, EU-lagen och Kungabalken"
+    ],
+    "correctIndex": 0,
+    "explanation": "Sveriges författning består av fyra grundlagar: Regeringsformen (som fastslår demokratin), Successionsordningen (reglerna för tronföljden), Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen."
+  },
+  {
+    "question": "Hur ofta hålls allmänna val till riksdagen, regioner och kommuner i Sverige?",
+    "options": [
+      "Vart fjärde år den andra söndagen i september",
+      "Vart femte år i maj",
+      "Vart tredje år i juni",
+      "Varje år på Sveriges nationaldag"
+    ],
+    "correctIndex": 0,
+    "explanation": "Allmänna val till riksdag, regionfullmäktige och kommunfullmäktige hålls i Sverige samtidigt vart fjärde år, den andra söndagen i september."
+  },
+  {
+    "question": "Vad innebär allemansrätten i Sverige? (What does 'Allemansrätten' mean?)",
+    "options": [
+      "Rätten att rösta i alla allmänna val oavsett medborgarskap",
+      "Rätten att vistas fritt i naturen under devisen 'inte störa, inte förstöra'",
+      "Rätten att bygga hus på allmän kommunal mark",
+      "Rätten till gratis kollektivtrafik för alla bosatta"
+    ],
+    "correctIndex": 1,
+    "explanation": "Allemansrätten är en unik svensk rättighet inskriven i grundlagen som ger alla människor rätt att röra sig fritt i skog och mark, under förutsättning att man visar hänsyn mot natur och markägare."
+  },
+  {
+    "question": "Hur många ledamöter sitter i Sveriges riksdag? (How many members in the Riksdag?)",
+    "options": [
+      "250 ledamöter",
+      "349 ledamöter",
+      "400 ledamöter",
+      "149 ledamöter"
+    ],
+    "correctIndex": 1,
+    "explanation": "Sveriges riksdag består av 349 folkvalda ledamöter (ett udda antal för att undvika oavgjorda omröstningar)."
+  },
+  {
+    "question": "Vem är Sveriges statschef enligt Regeringsformen? (Who is Head of State?)",
+    "options": [
+      "Statsministern",
+      "Kungen (monarken)",
+      "Riksdagens talman",
+      "Högsta domstolens ordförande"
+    ],
+    "correctIndex": 1,
+    "explanation": "Sverige är en parlamentarisk monarki där kungen är statschef. Statschefen har dock enbart representativa och ceremoniella uppgifter och saknar politisk makt."
+  },
+  {
+    "question": "Vad är riksdagens främsta uppgift i det svenska statsskicket?",
+    "options": [
+      "Att styra landet och leda departementen dagligen",
+      "Att stifta lagar, besluta om statens budget och kontrollera regeringen",
+      "Att döma i brottmål och förvaltningsmål",
+      "Att utse Sveriges monark och kungafamilj"
+    ],
+    "correctIndex": 1,
+    "explanation": "Riksdagen är Sveriges högsta beslutande organ. Dess tre huvuduppgifter är att stifta lagar, bestämma om statens inkomster och utgifter (budgeten) samt granska regeringen."
+  },
+  {
+    "question": "Vad innebär offentlighetsprincipen i Sverige?",
+    "options": [
+      "Att allmänheten och massmedia har rätt att ta del av myndigheters allmänna handlingar",
+      "Att alla domstolsförhandlingar måste hållas utomhus",
+      "Att alla medborgare måste offentliggöra sina privata anteckningar",
+      "Att alla statliga beslut måste godkännas via folkomröstning"
+    ],
+    "correctIndex": 0,
+    "explanation": "Offentlighetsprincipen är central i svensk demokrati och innebär att alla har rätt att läsa offentliga handlingar hos myndigheter för att garantera insyn och motverka korruption."
+  },
+  {
+    "question": "Vilket år fick kvinnor och män allmän och lika rösträtt i riksdagsval i Sverige?",
+    "options": [
+      "1809",
+      "1919 (med första allmänna valet 1921)",
+      "1945",
+      "1974"
+    ],
+    "correctIndex": 1,
+    "explanation": "Riksdagen beslutade om allmän och lika rösträtt för både kvinnor och män år 1919, och det första valet där kvinnor deltog ägde rum hösten 1921."
+  },
+  {
+    "question": "Vad har Sveriges 290 kommuner huvudsakligen ansvar för?",
+    "options": [
+      "Utrikespolitik, armén och valutapolitik",
+      "Skola, förskola, äldreomsorg och socialtjänst",
+      "Enbart sjukhus och regional kollektivtrafik",
+      "Att driva domstolar och fängelser"
+    ],
+    "correctIndex": 1,
+    "explanation": "Kommunerna ansvarar för den nära medborgarservicen såsom grundskola, förskola, äldreomsorg, renhållning, räddningstjänst och socialtjänst."
+  },
+  {
+    "question": "Vad har Sveriges 21 regioner huvudsakligen hand om?",
+    "options": [
+      "Hälso- och sjukvård, tandvård samt regional kollektivtrafik",
+      "Grundskolor och gymnasieskolor",
+      "Polisen och tullverket",
+      "Statens skatteuppbörd och passutfärdande"
+    ],
+    "correctIndex": 0,
+    "explanation": "Regionernas största och viktigaste ansvarsområde är hälso- och sjukvården samt tandvården, jämte utveckling av regional kollektivtrafik (t.ex. bussar och tåg)."
+  },
+  {
+    "question": "Vilket datum firas Sveriges nationaldag och vad uppmärksammas då?",
+    "options": [
+      "6 juni – Gustav Vasas val till kung 1523 och 1809 års regeringsform",
+      "30 april – Konungens födelsedag och Valborgsmässoafton",
+      "1 maj – Arbetarrörelsens dag och vårfirande",
+      "13 december – Lucias ljusfest"
+    ],
+    "correctIndex": 0,
+    "explanation": "Sveriges nationaldag och svenska flaggans dag firas den 6 juni till minne av att Gustav Vasa valdes till kung den 6 juni 1523 och 1809 års regeringsform."
+  },
+  {
+    "question": "Vilket år blev Sverige medlem i Europeiska unionen (EU)?",
+    "options": [
+      "1973",
+      "1995",
+      "2004",
+      "Sverige är inte medlem i EU"
+    ],
+    "correctIndex": 1,
+    "explanation": "Efter en rådgivande folkomröstning 1994 blev Sverige den 1 januari 1995 fullvärdig medlem i Europeiska unionen (EU)."
+  },
+  {
+    "question": "Vilka är Sveriges fem officiella nationella minoritetsspråk?",
+    "options": [
+      "Samiska, finska, meänkieli, romani chib och jiddisch",
+      "Engelska, arabiska, persiska, kurdiska och somaliska",
+      "Danska, norska, isländska, tyska och franska",
+      "Latin, gotiska, fornnordiska, samiska och finska"
+    ],
+    "correctIndex": 0,
+    "explanation": "I Sverige har fem historiska grupper ställning som nationella minoriteter: samer (som även är ett urfolk), sverigefinnar, tornedalingar, romer och judar. Deras språk är samiska, finska, meänkieli, romani chib och jiddisch."
+  },
+  {
+    "question": "Vad gör Riksdagens ombudsmän (Justitieombudsmannen / JO)?",
+    "options": [
+      "Granskar att myndigheter och tjänstemän följer lagar och behandlar medborgare korrekt",
+      "Dömer i brottmål och utdömer fängelsestraff",
+      "Utser regeringen och ministrarna",
+      "Bestämmer vilka böcker som får tryckas i landet"
+    ],
+    "correctIndex": 0,
+    "explanation": "JO (Justitieombudsmannen) är en svensk institution instiftad 1809 där enskilda medborgare kan klaga på myndigheter och tjänstemän som bryter mot lagar eller regler."
+  },
+  {
+    "question": "Vad innebär Tryckfrihetsförordningen från 1766 ur ett historiskt perspektiv?",
+    "options": [
+      "Världens första lagstiftning för tryckfrihet och offentlighet i allmänna handlingar",
+      "Lagen som förbjöd alla tidningar i Sverige under 1700-talet",
+      "En lag som krävde att kungen personligen godkände alla böcker",
+      "En internationell traktat mellan Sverige och Frankrike"
+    ],
+    "correctIndex": 0,
+    "explanation": "Den svenska tryckfrihetsförordningen från 1766 var världens allra första lag som skyddade tryckfriheten och fastslog rätten till allmänna handlingar (offentlighetsprincipen)."
+  }
+]

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CivicQuiz</string>
+    <string name="channel_name">تذكير المراجعة اليومية</string>
+    <string name="channel_description">إشعارات تذكير بالبطاقات والأسئلة المستحقة للمراجعة اليوم</string>
+    <string name="notification_title">حان وقت المراجعة اليومية! 📚</string>
+    <string name="notification_content">لديك أسئلة مستحقة للمراجعة في اختبار الجنسية اليوم. هيا نحقق تقدمك!</string>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Star / Honor Emblem -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M54,23 L56.5,29.5 L63.5,30 L58,34.5 L60,41 L54,37.5 L48,41 L50,34.5 L44.5,30 L51.5,29.5 Z" />
+    <!-- Book Pages Left -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M51,46 C43,43 32,44 26,47 L26,75 C32,72 43,71 51,74 Z" />
+    <!-- Book Pages Right -->
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M57,46 C65,43 76,44 82,47 L82,75 C76,72 65,71 57,74 Z" />
+    <!-- Book Spine -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M51,46 L57,46 L57,74 L51,74 Z" />
+    <!-- Checkmark Badge -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M66,66 A11,11 0 1,0 66.01,66 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M61,66 L65,70 L72,62" />
+</vector>
