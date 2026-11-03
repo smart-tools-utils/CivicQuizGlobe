@@ -314,8 +314,14 @@ fun MainAppScreen(
                         onImportQuestionsJson = { jsonStr, replace, onSuccess, onError ->
                             quizViewModel.importQuestionsFromJson(jsonStr, replace, onSuccess, onError)
                         },
+                        onImportQuestionsFromUri = { uri, replace, onSuccess, onError ->
+                            quizViewModel.importQuestionsFromUri(uri, replace, onSuccess, onError)
+                        },
                         onLoadSwedishPack = { onSuccess, onError ->
                             quizViewModel.loadSwedishPack(onSuccess, onError)
+                        },
+                        onLoadBundledPack = { packName, replace, onSuccess, onError ->
+                            quizViewModel.loadBundledPack(packName, replace, onSuccess, onError)
                         },
                         onCardAddedSuccess = {
                             currentTab = 1

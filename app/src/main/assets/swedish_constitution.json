@@ -1,0 +1,122 @@
+[
+  {
+    "id": 101,
+    "question": "Vilka är Sveriges fyra grundlagar?",
+    "options": [
+      "Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen",
+      "Strafflagen, Civilrätten, Miljölagen och Skattelagen",
+      "Allemansrätten, Kommunallagen, Vallagen och Skollagen",
+      "Grundlagen, Statslagen, EU-lagen och Kungabalken"
+    ],
+    "correct_index": 0,
+    "explanation": "Sveriges författning består av fyra grundlagar: Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen."
+  },
+  {
+    "id": 102,
+    "question": "Hur ofta hålls allmänna val till riksdagen, regioner och kommuner i Sverige?",
+    "options": [
+      "Vart fjärde år den andra söndagen i september",
+      "Vart femte år i maj",
+      "Vart tredje år i juni",
+      "Varje år på Sveriges nationaldag"
+    ],
+    "correct_index": 0,
+    "explanation": "Allmänna val till riksdag, regionfullmäktige och kommunfullmäktige hålls i Sverige samtidigt vart fjärde år, den andra söndagen i september."
+  },
+  {
+    "id": 103,
+    "question": "Vad innebär allemansrätten i Sverige?",
+    "options": [
+      "Rätten att rösta i alla allmänna val oavsett medborgarskap",
+      "Rätten att vistas fritt i naturen under devisen 'inte störa, inte förstöra'",
+      "Rätten att bygga hus på allmän kommunal mark",
+      "Rätten till gratis kollektivtrafik för alla bosatta"
+    ],
+    "correct_index": 1,
+    "explanation": "Allemansrätten ger alla människor rätt att röra sig fritt i skog och mark, under förutsättning att man visar hänsyn mot natur och markägare."
+  },
+  {
+    "id": 104,
+    "question": "Vad är riksdagens främsta uppgift i det svenska statsskicket?",
+    "options": [
+      "Att styra landet och leda departementen dagligen",
+      "Att stifta lagar, besluta om statens budget och kontrollera regeringen",
+      "Att döma i brottmål och förvaltningsmål",
+      "Att utse Sveriges monark och kungafamilj"
+    ],
+    "correct_index": 1,
+    "explanation": "Riksdagens tre huvuduppgifter är att stifta lagar, bestämma om statens inkomster och utgifter (budgeten) samt granska regeringen."
+  },
+  {
+    "id": 105,
+    "question": "Vad har Sveriges 290 kommuner huvudsakligen ansvar för?",
+    "options": [
+      "Utrikespolitik, armén och valutapolitik",
+      "Skola, förskola, äldreomsorg och socialtjänst",
+      "Enbart sjukhus och regional kollektivtrafik",
+      "Att driva domstolar och fängelser"
+    ],
+    "correct_index": 1,
+    "explanation": "Kommunerna ansvarar för den nära medborgarservicen såsom grundskola, förskola, äldreomsorg, renhållning, räddningstjänst och socialtjänst."
+  },
+  {
+    "id": 106,
+    "question": "Vad har Sveriges 21 regioner huvudsakligen hand om?",
+    "options": [
+      "Hälso- och sjukvård, tandvård samt regional kollektivtrafik",
+      "Grundskolor och gymnasieskolor",
+      "Polisen och tullverket",
+      "Statens skatteuppbörd och passutfärdande"
+    ],
+    "correct_index": 0,
+    "explanation": "Regionernas största och viktigaste ansvarsområde är hälso- och sjukvården samt tandvården, jämte utveckling av regional kollektivtrafik."
+  },
+  {
+    "id": 107,
+    "question": "Vilket datum firas Sveriges nationaldag och vad uppmärksammas då?",
+    "options": [
+      "6 juni – Gustav Vasas val till kung 1523 och 1809 års regeringsform",
+      "30 april – Konungens födelsedag och Valborgsmässoafton",
+      "1 maj – Arbetarrörelsens dag och vårfirande",
+      "13 december – Lucias ljusfest"
+    ],
+    "correct_index": 0,
+    "explanation": "Sveriges nationaldag och svenska flaggans dag firas den 6 juni till minne av att Gustav Vasa valdes till kung den 6 juni 1523 och 1809 års regeringsform."
+  },
+  {
+    "id": 108,
+    "question": "Vad gör Riksdagens ombudsmän (Justitieombudsmannen / JO)?",
+    "options": [
+      "Granskar att myndigheter och tjänstemän följer lagar och behandlar medborgare korrekt",
+      "Dömer i brottmål och utdömer fängelsestraff",
+      "Utser regeringen och ministrarna",
+      "Bestämmer vilka böcker som får tryckas i landet"
+    ],
+    "correct_index": 0,
+    "explanation": "JO (Justitieombudsmannen) är en svensk institution instiftad 1809 där enskilda medborgare kan klaga på myndigheter och tjänstemän som bryter mot lagar eller regler."
+  },
+  {
+    "id": 109,
+    "question": "Vad innebär Tryckfrihetsförordningen från 1766 ur ett historiskt perspektiv?",
+    "options": [
+      "Världens första lagstiftning för tryckfrihet och offentlighet i allmänna handlingar",
+      "Lagen som förbjöd alla tidningar i Sverige under 1700-talet",
+      "En lag som krävde att kungen personligen godkände alla böcker",
+      "En internationell traktat mellan Sverige och Frankrike"
+    ],
+    "correct_index": 0,
+    "explanation": "Den svenska tryckfrihetsförordningen från 1766 var världens allra första lag som skyddade tryckfriheten och fastslog rätten till allmänna handlingar."
+  },
+  {
+    "id": 110,
+    "question": "Vilka är Sveriges tre traditionella landsdelar?",
+    "options": [
+      "Götaland, Svealand och Norrland",
+      "Östergötland, Västergötland och Skåneland",
+      "Lappland, Småland och Uppland",
+      "Höglandet, Kustlandet och Fjällvärlden"
+    ],
+    "correct_index": 0,
+    "explanation": "Sverige är traditionellt uppdelat i tre historiska landsdelar: Götaland i söder, Svealand i mitten och Norrland i norr."
+  }
+]

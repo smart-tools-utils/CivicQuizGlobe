@@ -1,6 +1,7 @@
 package com.example.ui
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.ai.AiCardGenerator
@@ -263,14 +264,55 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Import questions from a picked file URI (Storage Access Framework).
+     */
+    fun importQuestionsFromUri(
+        uri: Uri,
+        replaceExisting: Boolean = false,
+        onSuccess: (Int) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val inputStream = getApplication<Application>().contentResolver.openInputStream(uri)
+                val jsonString = inputStream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+                if (jsonString.isNullOrBlank()) {
+                    onError("The selected file is empty.")
+                    return@launch
+                }
+                importQuestionsFromJson(jsonString, replaceExisting, onSuccess, onError)
+            } catch (e: Exception) {
+                val errorMsg = e.localizedMessage ?: "Failed to read file"
+                val strings = _currentLanguage.value.getStrings()
+                _toastMessage.value = "${strings.fileReadError}: $errorMsg"
+                onError(errorMsg)
+            }
+        }
+    }
+
+    /**
      * Load Swedish Citizenship Pack from assets/questions.json.
      */
     fun loadSwedishPack(onSuccess: (Int) -> Unit, onError: (String) -> Unit) {
+        loadBundledPack("questions.json", replaceExisting = true, onSuccess, onError)
+    }
+
+    /**
+     * Load any bundled asset pack by filename.
+     */
+    fun loadBundledPack(
+        assetFilename: String,
+        replaceExisting: Boolean = true,
+        onSuccess: (Int) -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val jsonString = AssetIngestion.readAssetFile(getApplication(), "questions.json")
+                val jsonString = AssetIngestion.readAssetFile(getApplication(), assetFilename)
                 val items = AssetIngestion.parseQuestionsJson(jsonString)
-                repository.deleteAll()
+                if (replaceExisting) {
+                    repository.deleteAll()
+                }
                 repository.insertAll(items)
                 _currentQuestionIndex.value = 0
                 _selectedOption.value = null

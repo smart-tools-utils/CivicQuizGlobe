@@ -1,5 +1,10 @@
 package com.example.ui.screens
 
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +30,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,6 +40,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -53,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,7 +81,9 @@ fun AddCardScreen(
     onClearGeneratedAiCard: () -> Unit,
     onCreateManualCard: (question: String, options: List<String>, correctIndex: Int, explanation: String, onSuccess: () -> Unit) -> Unit,
     onImportQuestionsJson: (jsonStr: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onImportQuestionsFromUri: (uri: Uri, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
     onLoadSwedishPack: (onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onLoadBundledPack: (packName: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
     onCardAddedSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -155,8 +165,11 @@ fun AddCardScreen(
                     onImportJson = { jsonStr, replace ->
                         onImportQuestionsJson(jsonStr, replace, { onCardAddedSuccess() }, {})
                     },
-                    onLoadSwedishPack = {
-                        onLoadSwedishPack({ onCardAddedSuccess() }, {})
+                    onImportUri = { uri, replace ->
+                        onImportQuestionsFromUri(uri, replace, { onCardAddedSuccess() }, {})
+                    },
+                    onLoadPack = { packName, replace ->
+                        onLoadBundledPack(packName, replace, { onCardAddedSuccess() }, {})
                     }
                 )
             }
@@ -170,10 +183,24 @@ fun AddCardScreen(
 private fun ImportJsonTab(
     strings: AppStrings,
     onImportJson: (jsonStr: String, replace: Boolean) -> Unit,
-    onLoadSwedishPack: () -> Unit
+    onImportUri: (uri: Uri, replace: Boolean) -> Unit,
+    onLoadPack: (packName: String, replace: Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+    var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedFileName by remember { mutableStateOf<String?>(null) }
     var jsonText by remember { mutableStateOf("") }
     var replaceExisting by remember { mutableStateOf(false) }
+
+    // System File Picker for selecting existing JSON files
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            selectedUri = it
+            selectedFileName = queryDisplayName(context, it)
+        }
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -182,12 +209,13 @@ private fun ImportJsonTab(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.FileDownload,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -207,34 +235,145 @@ private fun ImportJsonTab(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Quick action: Load Swedish Citizenship Pack
+            // SECTION 1: Select JSON file from device storage
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.FolderOpen,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = strings.chooseFileBtn,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        onClick = {
+                            filePickerLauncher.launch("*/*")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .testTag("btn_pick_json_file"),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(Icons.Default.FolderOpen, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (selectedFileName != null) strings.selectedFileLabel(selectedFileName!!) else strings.chooseFileBtn,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (selectedUri != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            onClick = {
+                                selectedUri?.let { uri ->
+                                    onImportUri(uri, replaceExisting)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(46.dp)
+                                .testTag("btn_import_picked_file"),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = CorrectGreen)
+                        ) {
+                            Icon(Icons.Default.Check, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(strings.importBtn, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // SECTION 2: Pre-bundled Study Packs
+            Text(
+                text = strings.bundledPacksTitle,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Pack 1: Sverige i fokus (25 questions)
             OutlinedButton(
-                onClick = onLoadSwedishPack,
+                onClick = { onLoadPack("questions.json", replaceExisting) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .testTag("btn_load_swedish_pack"),
+                    .testTag("btn_load_sverige_i_fokus"),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = strings.loadSwedishPackBtn,
+                    text = strings.loadPackSverigeIFokus,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Pack 2: Swedish Constitution (10 questions)
+            OutlinedButton(
+                onClick = { onLoadPack("swedish_constitution.json", replaceExisting) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .testTag("btn_load_grundlagar"),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = strings.loadPackGrundlagar,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // SECTION 3: Paste JSON text manually
+            Text(
+                text = "JSON",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             OutlinedTextField(
                 value = jsonText,
                 onValueChange = { jsonText = it },
-                label = { Text("JSON") },
                 placeholder = { Text(strings.importJsonPlaceholder) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(150.dp)
                     .testTag("import_json_input"),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -250,10 +389,12 @@ private fun ImportJsonTab(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Replace or Append Checkbox
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { replaceExisting = !replaceExisting },
+                    .clickable { replaceExisting = !replaceExisting }
+                    .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
@@ -262,7 +403,7 @@ private fun ImportJsonTab(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (replaceExisting) "Replace existing questions in library" else "Add to existing questions",
+                    text = if (replaceExisting) strings.replaceCheckboxLabel else strings.addToExistingLabel,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -284,6 +425,26 @@ private fun ImportJsonTab(
             }
         }
     }
+}
+
+private fun queryDisplayName(context: Context, uri: Uri): String {
+    var displayName = ""
+    try {
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index != -1) {
+                    displayName = it.getString(index)
+                }
+            }
+        }
+    } catch (_: Exception) {}
+
+    if (displayName.isBlank()) {
+        displayName = uri.lastPathSegment ?: "questions.json"
+    }
+    return displayName
 }
 
 @Composable
