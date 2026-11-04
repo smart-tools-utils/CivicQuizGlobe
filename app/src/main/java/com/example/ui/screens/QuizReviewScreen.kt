@@ -16,24 +16,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -45,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,26 +71,38 @@ import com.example.ui.theme.WrongRedContainer
 
 @Composable
 fun QuizReviewScreen(
-    dueQuestions: List<QuizItem>,
+    sessionQuestions: List<QuizItem>,
     currentIndex: Int,
     selectedOption: Int?,
     isAnswerRevealed: Boolean,
+    lastAssignedQuality: Int?,
+    timeLimitSeconds: Int,
+    remainingSeconds: Int,
+    isTimerRunning: Boolean,
+    availableDecks: List<String>,
+    selectedDeck: String?,
     strings: AppStrings,
     onOptionSelected: (Int) -> Unit,
-    onRevealAnswer: () -> Unit,
     onRateQuality: (QuizItem, Int) -> Unit,
+    onNextQuestion: () -> Unit,
+    onStartNewSession: () -> Unit,
+    onSelectDeck: (String?) -> Unit,
+    onSetTimerDuration: (Int) -> Unit,
     onNavigateToAddCard: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (dueQuestions.isEmpty()) {
+    val currentLanguage = LocalAppLanguage.current
+
+    if (sessionQuestions.isEmpty()) {
         EmptyReviewState(
             strings = strings,
+            onStartNewSession = onStartNewSession,
             onNavigateToAddCard = onNavigateToAddCard,
             modifier = modifier
         )
     } else {
-        val safeIndex = currentIndex.coerceIn(0, dueQuestions.size - 1)
-        val currentItem = dueQuestions[safeIndex]
+        val safeIndex = currentIndex.coerceIn(0, sessionQuestions.size - 1)
+        val currentItem = sessionQuestions[safeIndex]
 
         Column(
             modifier = modifier
@@ -90,15 +111,55 @@ fun QuizReviewScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Deck Selector Chips
+            if (availableDecks.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    item {
+                        FilterChip(
+                            selected = selectedDeck == null,
+                            onClick = { onSelectDeck(null) },
+                            label = { Text(strings.allDecksLabel) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Layers, contentDescription = null, modifier = Modifier.size(16.dp))
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    }
+                    items(availableDecks) { deck ->
+                        FilterChip(
+                            selected = selectedDeck == deck,
+                            onClick = { onSelectDeck(deck) },
+                            label = { Text(deck) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            // Header & Timer Section
             ReviewHeader(
                 currentIndex = safeIndex + 1,
-                totalCount = dueQuestions.size,
+                totalCount = sessionQuestions.size,
                 repetition = currentItem.repetition,
                 intervalDays = currentItem.interval,
-                strings = strings
+                timeLimitSeconds = timeLimitSeconds,
+                remainingSeconds = remainingSeconds,
+                isTimerRunning = isTimerRunning,
+                strings = strings,
+                onSetTimerDuration = onSetTimerDuration,
+                onStartNewSession = onStartNewSession
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Main Question Card
             ElevatedCard(
@@ -115,6 +176,7 @@ fun QuizReviewScreen(
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Deck & Category Badge
                     Surface(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(12.dp)
@@ -124,14 +186,14 @@ fun QuizReviewScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = Icons.Default.School,
+                                imageVector = Icons.Default.Layers,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(15.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = strings.appTitle,
+                                text = currentItem.deckName.ifBlank { "Medborgarskap" },
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
@@ -141,8 +203,10 @@ fun QuizReviewScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
+                    // Primary Question Text
+                    val primaryQuestion = currentItem.getLocalizedQuestion(currentLanguage.code)
                     Text(
-                        text = currentItem.question,
+                        text = primaryQuestion,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             lineHeight = 26.sp
@@ -151,8 +215,29 @@ fun QuizReviewScreen(
                         textAlign = TextAlign.Center
                     )
 
+                    // Secondary translation if available
+                    val secondaryQuestion = when (currentLanguage.code) {
+                        "sv" -> currentItem.questionAr.ifBlank { currentItem.questionEn }
+                        "ar" -> currentItem.questionSv.ifBlank { currentItem.questionEn }
+                        else -> currentItem.questionSv.ifBlank { currentItem.questionAr }
+                    }
+
+                    if (secondaryQuestion.isNotBlank() && secondaryQuestion != primaryQuestion) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = secondaryQuestion,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontStyle = FontStyle.Italic,
+                                lineHeight = 20.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    // Options list
                     currentItem.options.forEachIndexed { index, optionText ->
                         OptionButton(
                             optionIndex = index,
@@ -164,34 +249,10 @@ fun QuizReviewScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-
-                    if (!isAnswerRevealed) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            onClick = onRevealAnswer,
-                            enabled = selectedOption != null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .testTag("check_answer_button"),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = if (selectedOption == null) strings.selectAnOptionFirst else strings.revealAnswerBtn,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
             }
 
-            // Answer explanation & SM-2 Rating Section
+            // Answer explanation & Time-weighted SM-2 section
             AnimatedVisibility(
                 visible = isAnswerRevealed,
                 enter = fadeIn() + slideInVertically(initialOffsetY = { 40 })
@@ -202,6 +263,28 @@ fun QuizReviewScreen(
                         .padding(top = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Next Question button
+                    Button(
+                        onClick = onNextQuestion,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("btn_next_question"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = strings.nextQuestionBtn,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Explanation Card
                     if (currentItem.explanation.isNotBlank()) {
                         Card(
                             modifier = Modifier
@@ -243,6 +326,7 @@ fun QuizReviewScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
+                    // SM-2 Manual Override section
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -271,6 +355,16 @@ fun QuizReviewScreen(
                                 Text(
                                     text = strings.rateRecallPrompt,
                                     style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            if (lastAssignedQuality != null) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "التقييم التلقائي بالوقت: Q=$lastAssignedQuality",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -337,7 +431,12 @@ private fun ReviewHeader(
     totalCount: Int,
     repetition: Int,
     intervalDays: Int,
-    strings: AppStrings
+    timeLimitSeconds: Int,
+    remainingSeconds: Int,
+    isTimerRunning: Boolean,
+    strings: AppStrings,
+    onSetTimerDuration: (Int) -> Unit,
+    onStartNewSession: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -352,31 +451,126 @@ private fun ReviewHeader(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(
-                    text = "${strings.repetitionBadge(repetition)} | ${strings.intervalBadge(intervalDays)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    fontWeight = FontWeight.SemiBold
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Restart Session button
+                IconButton(onClick = onStartNewSession, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = strings.newSessionBtn,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Surface(
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = "${strings.repetitionBadge(repetition)} | ${strings.intervalBadge(intervalDays)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Progress bar
         LinearProgressIndicator(
             progress = { currentIndex.toFloat() / totalCount.toFloat() },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp)
-                .clip(RoundedCornerShape(4.dp)),
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Timer row & speed controller
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Timer countdown badge
+            if (timeLimitSeconds > 0) {
+                val timerColor = when {
+                    remainingSeconds <= 3 -> WrongRed
+                    remainingSeconds <= 6 -> HardOrange
+                    else -> MaterialTheme.colorScheme.primary
+                }
+
+                Surface(
+                    color = timerColor.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.dp, timerColor.copy(alpha = 0.5f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (isTimerRunning) {
+                            CircularProgressIndicator(
+                                progress = { remainingSeconds.toFloat() / timeLimitSeconds.toFloat() },
+                                modifier = Modifier.size(16.dp),
+                                color = timerColor,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                        } else {
+                            Icon(Icons.Default.Timer, contentDescription = null, tint = timerColor, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                        }
+                        Text(
+                            text = "${remainingSeconds}s",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = timerColor
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = "المؤقت: معطل",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Timer duration toggle chips
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(0 to "Off", 10 to "10s", 15 to "15s", 25 to "25s").forEach { (sec, label) ->
+                    val isSelected = timeLimitSeconds == sec
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onSetTimerDuration(sec) },
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -496,7 +690,7 @@ private fun Sm2Button(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(64.dp),
+        modifier = modifier.height(60.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor)
     ) {
@@ -525,6 +719,7 @@ private fun Sm2Button(
 @Composable
 private fun EmptyReviewState(
     strings: AppStrings,
+    onStartNewSession: () -> Unit,
     onNavigateToAddCard: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -539,15 +734,15 @@ private fun EmptyReviewState(
             verticalArrangement = Arrangement.Center
         ) {
             Surface(
-                modifier = Modifier.size(90.dp),
+                modifier = Modifier.size(80.dp),
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        imageVector = Icons.Default.Layers,
                         contentDescription = null,
-                        modifier = Modifier.size(54.dp),
+                        modifier = Modifier.size(46.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -573,7 +768,22 @@ private fun EmptyReviewState(
                 lineHeight = 22.sp
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = onStartNewSession,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .testTag("btn_start_new_session"),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Refresh, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(strings.newSessionBtn, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedButton(
                 onClick = onNavigateToAddCard,

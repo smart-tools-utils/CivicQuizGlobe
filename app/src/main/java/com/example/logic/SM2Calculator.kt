@@ -7,16 +7,17 @@ import kotlin.math.roundToInt
 /**
  * درجات تقييم الإجابة في خوارزمية SM-2
  */
-enum class ReviewQuality(val grade: Int, val labelAr: String, val labelEn: String) {
-    AGAIN(1, "إعادة (صعب جداً)", "Again"),
-    HARD(2, "صعب", "Hard"),
-    GOOD(4, "جيد (متوسط)", "Good"),
-    EASY(5, "سهل جداً", "Easy")
+enum class ReviewQuality(val grade: Int, val labelAr: String, val labelEn: String, val labelSv: String) {
+    BLACKOUT(0, "فوات الوقت (نسيان تام)", "Timeout (Blackout)", "Tidsgräns nådd"),
+    AGAIN(1, "إعادة (غير صحيح)", "Again (Incorrect)", "Igen (Fel svar)"),
+    HARD(2, "صعب (خطأ بعد تفكير)", "Hard (Struggled)", "Svårt (Fel efter tvekan)"),
+    PASS_HARD(3, "صحيح بعد تردد طويل", "Pass (Hesitant)", "Rätt efter tvekan"),
+    GOOD(4, "جيد (تذكر سليم)", "Good (Recalled)", "Bra (Säker)"),
+    EASY(5, "سهل جداً (استدعاء فوري)", "Easy (Instant)", "Lätt (Direkt)")
 }
 
 /**
- * خوارزمية التكرار المتباعد SuperMemo-2 (SM-2 Logic)
- * دالة برمجية نقية (Pure Function) بدون أي آثار جانبية.
+ * خوارزمية التكرار المتباعد SuperMemo-2 المدمجة مع وزن الوقت (Time-Weighted SM-2)
  */
 object SM2Calculator {
 
@@ -24,26 +25,46 @@ object SM2Calculator {
     private const val ONE_DAY_MILLIS = 24L * 60L * 60L * 1000L
 
     /**
-     * تحديث مقاييس SM-2 لكائن QuizItem بناءً على درجة تقييم المستخدم (quality من 0 إلى 5).
+     * استنتاج درجة الجودة (quality من 0 إلى 5) تلقائياً استناداً إلى صحة الإجابة وسرعة الاستحضار:
      *
-     * معادلات SuperMemo-2:
-     * 1. Ease Factor:
-     *    EF' = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
-     *    بحيث لا يقل EF' عن 1.3
-     * 2. Interval (I):
-     *    - إذا كانت q < 3 (فشل التذكر): repetition = 0, interval = 1
-     *    - إذا كانت q >= 3 (نجاح التذكر):
-     *        repetition 0 -> interval = 1 day
-     *        repetition 1 -> interval = 6 days
-     *        repetition >= 2 -> interval = round(I * EF)
-     *        repetition' = repetition + 1
+     * 1. فوات الوقت (isTimedOut): quality = 0 (فشل تام في الاستدعاء).
+     * 2. إجابة خاطئة: quality = 1 (استعجال) أو 2 (تفكير ثم خطأ).
+     * 3. إجابة صحيحة:
+     *    - في أول 35% من الوقت المحدد: quality = 5 (استدعاء تلقائي فوري وسهل).
+     *    - بين 35% و 70%: quality = 4 (تذكر طبيعي جيد).
+     *    - أكثر من 70% من الوقت المتاح: quality = 3 (صحيح ولكن بتردد وصعوبة).
+     */
+    fun deriveQualityFromTime(
+        isCorrect: Boolean,
+        isTimedOut: Boolean,
+        timeTakenMillis: Long,
+        timeLimitMillis: Long
+    ): Int {
+        if (isTimedOut) return 0
+
+        if (!isCorrect) {
+            return if (timeLimitMillis > 0 && timeTakenMillis > (timeLimitMillis * 0.5f)) 2 else 1
+        }
+
+        // إذا كان المؤقت معطلاً (timeLimit <= 0) نعتبر الاستدعاء جيداً كمعيار
+        if (timeLimitMillis <= 0L) return 4
+
+        val ratio = (timeTakenMillis.toFloat() / timeLimitMillis.toFloat()).coerceIn(0f, 1f)
+        return when {
+            ratio <= 0.35f -> 5 // سهل جداً (استدعاء سريع وفوري)
+            ratio <= 0.70f -> 4 // تذكر جيد
+            else -> 3           // تذكر مع صعوبة وتردد في آخر الثواني
+        }
+    }
+
+    /**
+     * حساب SM-2 التقليدي بناءً على درجة quality صريحة (0..5).
      */
     fun calculateSM2(
         item: QuizItem,
         quality: Int,
         currentTimeMillis: Long = System.currentTimeMillis()
     ): QuizItem {
-        // حصر التقييم بين 0 و 5
         val q = quality.coerceIn(0, 5)
 
         val newRepetition: Int
@@ -61,7 +82,7 @@ object SM2Calculator {
             }
             newRepetition = item.repetition + 1
         } else {
-            // إجابة غير موفقة أو صعبة جداً -> إعادة الدورة
+            // إجابة غير موفقة أو فوات الوقت -> إعادة الدورة للصفر
             newRepetition = 0
             newInterval = 1
         }
@@ -80,5 +101,22 @@ object SM2Calculator {
             easeFactor = newEaseFactor,
             nextReviewDate = newNextReviewDate
         )
+    }
+
+    /**
+     * حساب SM-2 المدمج مع الزمن المستغرق والمؤقت.
+     * يُرجع كائن السؤال المحدث مع درجة الجودة المحسوبة (quality).
+     */
+    fun calculateSM2WithTime(
+        item: QuizItem,
+        isCorrect: Boolean,
+        isTimedOut: Boolean,
+        timeTakenMillis: Long,
+        timeLimitMillis: Long,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    ): Pair<QuizItem, Int> {
+        val quality = deriveQualityFromTime(isCorrect, isTimedOut, timeTakenMillis, timeLimitMillis)
+        val updatedItem = calculateSM2(item, quality, currentTimeMillis)
+        return Pair(updatedItem, quality)
     }
 }

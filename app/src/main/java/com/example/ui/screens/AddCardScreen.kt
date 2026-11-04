@@ -75,15 +75,16 @@ import com.example.ui.theme.CorrectGreenContainer
 fun AddCardScreen(
     isGeneratingAi: Boolean,
     generatedAiCard: QuizItem?,
+    availableDecks: List<String> = emptyList(),
     strings: AppStrings,
     onGenerateAiCard: (String) -> Unit,
     onSaveGeneratedAiCard: (onSuccess: () -> Unit) -> Unit,
     onClearGeneratedAiCard: () -> Unit,
-    onCreateManualCard: (question: String, options: List<String>, correctIndex: Int, explanation: String, onSuccess: () -> Unit) -> Unit,
-    onImportQuestionsJson: (jsonStr: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
-    onImportQuestionsFromUri: (uri: Uri, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
-    onLoadSwedishPack: (onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
-    onLoadBundledPack: (packName: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onCreateManualCard: (question: String, options: List<String>, correctIndex: Int, explanation: String, deckName: String, onSuccess: () -> Unit) -> Unit,
+    onImportQuestionsJson: (jsonStr: String, targetDeckName: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onImportQuestionsFromUri: (uri: Uri, targetDeckName: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onLoadBundledPack: (packName: String, deckName: String, replace: Boolean, onSuccess: (Int) -> Unit, onError: (String) -> Unit) -> Unit,
+    onCopySchema: () -> Unit,
     onCardAddedSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -153,23 +154,26 @@ fun AddCardScreen(
             }
             1 -> {
                 ManualAddTab(
+                    availableDecks = availableDecks,
                     strings = strings,
-                    onCreateCard = { q, opts, idx, exp ->
-                        onCreateManualCard(q, opts, idx, exp, onCardAddedSuccess)
+                    onCreateCard = { q, opts, idx, exp, deck ->
+                        onCreateManualCard(q, opts, idx, exp, deck, onCardAddedSuccess)
                     }
                 )
             }
             2 -> {
                 ImportJsonTab(
+                    availableDecks = availableDecks,
                     strings = strings,
-                    onImportJson = { jsonStr, replace ->
-                        onImportQuestionsJson(jsonStr, replace, { onCardAddedSuccess() }, {})
+                    onCopySchema = onCopySchema,
+                    onImportJson = { jsonStr, deck, replace ->
+                        onImportQuestionsJson(jsonStr, deck, replace, { onCardAddedSuccess() }, {})
                     },
-                    onImportUri = { uri, replace ->
-                        onImportQuestionsFromUri(uri, replace, { onCardAddedSuccess() }, {})
+                    onImportUri = { uri, deck, replace ->
+                        onImportQuestionsFromUri(uri, deck, replace, { onCardAddedSuccess() }, {})
                     },
-                    onLoadPack = { packName, replace ->
-                        onLoadBundledPack(packName, replace, { onCardAddedSuccess() }, {})
+                    onLoadPack = { packName, deck, replace ->
+                        onLoadBundledPack(packName, deck, replace, { onCardAddedSuccess() }, {})
                     }
                 )
             }
@@ -181,15 +185,18 @@ fun AddCardScreen(
 
 @Composable
 private fun ImportJsonTab(
+    availableDecks: List<String>,
     strings: AppStrings,
-    onImportJson: (jsonStr: String, replace: Boolean) -> Unit,
-    onImportUri: (uri: Uri, replace: Boolean) -> Unit,
-    onLoadPack: (packName: String, replace: Boolean) -> Unit
+    onCopySchema: () -> Unit,
+    onImportJson: (jsonStr: String, targetDeckName: String, replace: Boolean) -> Unit,
+    onImportUri: (uri: Uri, targetDeckName: String, replace: Boolean) -> Unit,
+    onLoadPack: (packName: String, targetDeckName: String, replace: Boolean) -> Unit
 ) {
     val context = LocalContext.current
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var selectedFileName by remember { mutableStateOf<String?>(null) }
     var jsonText by remember { mutableStateOf("") }
+    var targetDeckName by remember { mutableStateOf("Medborgarskap") }
     var replaceExisting by remember { mutableStateOf(false) }
 
     // System File Picker for selecting existing JSON files
@@ -202,226 +209,326 @@ private fun ImportJsonTab(
         }
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Header
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.FileDownload,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // TOP CARD: Schema Generator & AI Studio Prompt Exporter
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("schema_generator_card"),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f))
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = strings.copySchemaBtn,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
-                    text = strings.importSectionTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = strings.copySchemaDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
+                    lineHeight = 18.sp
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onCopySchema,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .testTag("btn_copy_ai_schema"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(strings.copySchemaBtn, fontWeight = FontWeight.Bold)
+                }
             }
+        }
 
-            Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-            Text(
-                text = strings.importSectionDesc,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        // MAIN IMPORT CARD
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Header
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.FileDownload,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = strings.importSectionTitle,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-            // SECTION 1: Select JSON file from device storage
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.FolderOpen,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = strings.chooseFileBtn,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                Text(
+                    text = strings.importSectionDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = {
-                            filePickerLauncher.launch("*/*")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .testTag("btn_pick_json_file"),
-                        shape = RoundedCornerShape(10.dp)
+                // Target Deck Name Input
+                Text(
+                    text = strings.targetDeckNameLabel,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = targetDeckName,
+                    onValueChange = { targetDeckName = it },
+                    placeholder = { Text(strings.targetDeckNameHint) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("input_target_deck_name"),
+                    shape = RoundedCornerShape(10.dp),
+                    singleLine = true
+                )
+
+                // Quick Deck suggestions chips if available
+                if (availableDecks.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(Icons.Default.FolderOpen, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (selectedFileName != null) strings.selectedFileLabel(selectedFileName!!) else strings.chooseFileBtn,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    if (selectedUri != null) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            onClick = {
-                                selectedUri?.let { uri ->
-                                    onImportUri(uri, replaceExisting)
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(46.dp)
-                                .testTag("btn_import_picked_file"),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = CorrectGreen)
-                        ) {
-                            Icon(Icons.Default.Check, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(strings.importBtn, fontWeight = FontWeight.Bold)
+                        items(availableDecks) { deck ->
+                            FilterChip(
+                                selected = targetDeckName == deck,
+                                onClick = { targetDeckName = deck },
+                                label = { Text(deck, fontSize = 12.sp) }
+                            )
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(18.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // SECTION 2: Pre-bundled Study Packs
-            Text(
-                text = strings.bundledPacksTitle,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+                // SECTION 1: Select JSON file from device storage
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.FolderOpen,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = strings.chooseFileBtn,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-            // Pack 1: Sverige i fokus (25 questions)
-            OutlinedButton(
-                onClick = { onLoadPack("questions.json", replaceExisting) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .testTag("btn_load_sverige_i_fokus"),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                filePickerLauncher.launch("*/*")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("btn_pick_json_file"),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(Icons.Default.FolderOpen, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (selectedFileName != null) strings.selectedFileLabel(selectedFileName!!) else strings.chooseFileBtn,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        if (selectedUri != null) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                onClick = {
+                                    selectedUri?.let { uri ->
+                                        onImportUri(uri, targetDeckName.ifBlank { "Medborgarskap" }, replaceExisting)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(46.dp)
+                                    .testTag("btn_import_picked_file"),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = CorrectGreen)
+                            ) {
+                                Icon(Icons.Default.Check, contentDescription = null)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(strings.importBtn, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // SECTION 2: Pre-bundled Study Packs
                 Text(
-                    text = strings.loadPackSverigeIFokus,
+                    text = strings.bundledPacksTitle,
+                    style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            // Pack 2: Swedish Constitution (10 questions)
-            OutlinedButton(
-                onClick = { onLoadPack("swedish_constitution.json", replaceExisting) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .testTag("btn_load_grundlagar"),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                Spacer(modifier = Modifier.width(8.dp))
+                // Pack 1: Sverige i fokus (25 questions)
+                OutlinedButton(
+                    onClick = { onLoadPack("questions.json", "Medborgarskap", replaceExisting) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .testTag("btn_load_sverige_i_fokus"),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = strings.loadPackSverigeIFokus,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Pack 2: Swedish Constitution (10 questions)
+                OutlinedButton(
+                    onClick = { onLoadPack("swedish_constitution.json", "Grundlagar", replaceExisting) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .testTag("btn_load_grundlagar"),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = strings.loadPackGrundlagar,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // SECTION 3: Paste JSON text manually
                 Text(
-                    text = strings.loadPackGrundlagar,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary
+                    text = "JSON",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
                 )
-            }
 
-            Spacer(modifier = Modifier.height(18.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-            // SECTION 3: Paste JSON text manually
-            Text(
-                text = "JSON",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            OutlinedTextField(
-                value = jsonText,
-                onValueChange = { jsonText = it },
-                placeholder = { Text(strings.importJsonPlaceholder) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .testTag("import_json_input"),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = strings.jsonFormatNote,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 11.sp
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Replace or Append Checkbox
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { replaceExisting = !replaceExisting }
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = replaceExisting,
-                    onCheckedChange = { replaceExisting = it }
+                OutlinedTextField(
+                    value = jsonText,
+                    onValueChange = { jsonText = it },
+                    placeholder = { Text(strings.importJsonPlaceholder) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .testTag("import_json_input"),
+                    shape = RoundedCornerShape(12.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = if (replaceExisting) strings.replaceCheckboxLabel else strings.addToExistingLabel,
-                    style = MaterialTheme.typography.bodySmall
+                    text = strings.jsonFormatNote,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 11.sp
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = { onImportJson(jsonText.trim(), replaceExisting) },
-                enabled = jsonText.isNotBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .testTag("btn_confirm_import_json"),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.Default.Check, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(strings.importBtn, fontWeight = FontWeight.Bold)
+                // Replace or Append Checkbox
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { replaceExisting = !replaceExisting }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = replaceExisting,
+                        onCheckedChange = { replaceExisting = it }
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (replaceExisting) strings.replaceCheckboxLabel else strings.addToExistingLabel,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { onImportJson(jsonText.trim(), targetDeckName.ifBlank { "Medborgarskap" }, replaceExisting) },
+                    enabled = jsonText.isNotBlank(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .testTag("btn_confirm_import_json"),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(strings.importBtn, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
@@ -651,8 +758,9 @@ private fun AiGeneratorTab(
 
 @Composable
 private fun ManualAddTab(
+    availableDecks: List<String>,
     strings: AppStrings,
-    onCreateCard: (question: String, options: List<String>, correctIndex: Int, explanation: String) -> Unit
+    onCreateCard: (question: String, options: List<String>, correctIndex: Int, explanation: String, deckName: String) -> Unit
 ) {
     var questionText by remember { mutableStateOf("") }
     var option1 by remember { mutableStateOf("") }
@@ -661,6 +769,7 @@ private fun ManualAddTab(
     var option4 by remember { mutableStateOf("") }
     var correctIndex by remember { mutableIntStateOf(0) }
     var explanationText by remember { mutableStateOf("") }
+    var deckName by remember { mutableStateOf("Medborgarskap") }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -669,6 +778,42 @@ private fun ManualAddTab(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Deck selection for manual card
+            Text(
+                text = strings.targetDeckNameLabel,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = deckName,
+                onValueChange = { deckName = it },
+                placeholder = { Text(strings.targetDeckNameHint) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("manual_deck_input"),
+                shape = RoundedCornerShape(10.dp),
+                singleLine = true
+            )
+
+            if (availableDecks.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(availableDecks) { deck ->
+                        FilterChip(
+                            selected = deckName == deck,
+                            onClick = { deckName = deck },
+                            label = { Text(deck, fontSize = 12.sp) }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
             Text(
                 text = strings.manualQuestionLabel,
                 style = MaterialTheme.typography.labelLarge,
@@ -763,7 +908,7 @@ private fun ManualAddTab(
             Button(
                 onClick = {
                     val validOptions = listOf(option1, option2, option3, option4).filter { it.isNotBlank() }
-                    onCreateCard(questionText, validOptions, correctIndex, explanationText)
+                    onCreateCard(questionText, validOptions, correctIndex, explanationText, deckName.ifBlank { "Medborgarskap" })
                 },
                 modifier = Modifier
                     .fillMaxWidth()

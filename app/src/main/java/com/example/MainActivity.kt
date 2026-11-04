@@ -124,9 +124,16 @@ fun MainAppScreen(
 
     val dueQuestions by quizViewModel.dueQuestions.collectAsStateWithLifecycle()
     val allQuestions by quizViewModel.allQuestions.collectAsStateWithLifecycle()
+    val activeSessionQuestions by quizViewModel.activeSessionQuestions.collectAsStateWithLifecycle()
+    val distinctDecks by quizViewModel.distinctDecks.collectAsStateWithLifecycle()
+    val selectedDeck by quizViewModel.selectedDeck.collectAsStateWithLifecycle()
     val currentIndex by quizViewModel.currentQuestionIndex.collectAsStateWithLifecycle()
     val selectedOption by quizViewModel.selectedOption.collectAsStateWithLifecycle()
     val isAnswerRevealed by quizViewModel.isAnswerRevealed.collectAsStateWithLifecycle()
+    val lastAssignedQuality by quizViewModel.lastAssignedQuality.collectAsStateWithLifecycle()
+    val timeLimitSeconds by quizViewModel.timeLimitSeconds.collectAsStateWithLifecycle()
+    val remainingSeconds by quizViewModel.remainingSeconds.collectAsStateWithLifecycle()
+    val isTimerRunning by quizViewModel.isTimerRunning.collectAsStateWithLifecycle()
     val isGeneratingAi by quizViewModel.isGeneratingAi.collectAsStateWithLifecycle()
     val generatedAiCard by quizViewModel.generatedAiCard.collectAsStateWithLifecycle()
     val toastMessage by quizViewModel.toastMessage.collectAsStateWithLifecycle()
@@ -278,14 +285,23 @@ fun MainAppScreen(
             when (currentTab) {
                 0 -> {
                     QuizReviewScreen(
-                        dueQuestions = dueQuestions,
+                        sessionQuestions = activeSessionQuestions,
                         currentIndex = currentIndex,
                         selectedOption = selectedOption,
                         isAnswerRevealed = isAnswerRevealed,
+                        lastAssignedQuality = lastAssignedQuality,
+                        timeLimitSeconds = timeLimitSeconds,
+                        remainingSeconds = remainingSeconds,
+                        isTimerRunning = isTimerRunning,
+                        availableDecks = distinctDecks,
+                        selectedDeck = selectedDeck,
                         strings = strings,
                         onOptionSelected = quizViewModel::onOptionSelected,
-                        onRevealAnswer = quizViewModel::revealAnswer,
                         onRateQuality = quizViewModel::onRateAndSubmitQuality,
+                        onNextQuestion = quizViewModel::nextQuestion,
+                        onStartNewSession = { quizViewModel.startSmartSession(limit = 20) },
+                        onSelectDeck = quizViewModel::selectDeck,
+                        onSetTimerDuration = quizViewModel::setTimerDuration,
                         onNavigateToAddCard = { currentTab = 2 },
                         modifier = contentModifier
                     )
@@ -302,27 +318,26 @@ fun MainAppScreen(
                     AddCardScreen(
                         isGeneratingAi = isGeneratingAi,
                         generatedAiCard = generatedAiCard,
+                        availableDecks = distinctDecks,
                         strings = strings,
                         onGenerateAiCard = quizViewModel::generateQuestionWithAi,
                         onSaveGeneratedAiCard = { onSuccess ->
                             quizViewModel.saveGeneratedAiQuestion(onSuccess)
                         },
                         onClearGeneratedAiCard = quizViewModel::clearGeneratedAiCard,
-                        onCreateManualCard = { q, opts, idx, exp, onSuccess ->
-                            quizViewModel.createManualQuestion(q, opts, idx, exp, onSuccess)
+                        onCreateManualCard = { q, opts, idx, exp, deck, onSuccess ->
+                            quizViewModel.createManualQuestion(q, opts, idx, exp, deck, onSuccess)
                         },
-                        onImportQuestionsJson = { jsonStr, replace, onSuccess, onError ->
-                            quizViewModel.importQuestionsFromJson(jsonStr, replace, onSuccess, onError)
+                        onImportQuestionsJson = { jsonStr, deck, replace, onSuccess, onError ->
+                            quizViewModel.importQuestionsFromJson(jsonStr, deck, replace, onSuccess, onError)
                         },
-                        onImportQuestionsFromUri = { uri, replace, onSuccess, onError ->
-                            quizViewModel.importQuestionsFromUri(uri, replace, onSuccess, onError)
+                        onImportQuestionsFromUri = { uri, deck, replace, onSuccess, onError ->
+                            quizViewModel.importQuestionsFromUri(uri, deck, replace, onSuccess, onError)
                         },
-                        onLoadSwedishPack = { onSuccess, onError ->
-                            quizViewModel.loadSwedishPack(onSuccess, onError)
+                        onLoadBundledPack = { packName, deck, replace, onSuccess, onError ->
+                            quizViewModel.loadBundledPack(packName, deck, replace, onSuccess, onError)
                         },
-                        onLoadBundledPack = { packName, replace, onSuccess, onError ->
-                            quizViewModel.loadBundledPack(packName, replace, onSuccess, onError)
-                        },
+                        onCopySchema = quizViewModel::copySchemaToClipboard,
                         onCardAddedSuccess = {
                             currentTab = 1
                         },

@@ -8,11 +8,11 @@ import androidx.room.TypeConverters
 import com.example.data.model.QuizItem
 
 /**
- * قاعدة بيانات التطبيق الرئيسية باستخدام Room
+ * Main Room Database for the app with Multi-Deck support and destructive migration fallback.
  */
 @Database(
     entities = [QuizItem::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -30,7 +30,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "quiz_sm2_database.db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
